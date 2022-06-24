@@ -1,6 +1,9 @@
 #include <iostream>
+#include "Gates.h"
+#include "Tests.h"
 
 int main()
 {
-    std::cout << "Hello World!\n";
+    test();
+    std::cout << "All test executed successfully!\n";
 }
