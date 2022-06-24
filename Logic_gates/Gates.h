@@ -1,56 +1,70 @@
 #pragma once
 
-class logic_and
+class gate
 {
 public:
-	void solve()
-	{
-		out = in1 && in2;
-	}
-
-//private:
-	bool in1 { false };
-	bool in2{ false };
 	bool out{ false };
 };
 
-class logic_or
+class logic_and : public gate
 {
 public:
 	void solve()
 	{
-		out = in1 || in2;
+		out = in1->out && in2->out;
 	}
 
 //private:
-	bool in1{ false };
-	bool in2{ false };
-	bool out{ false };
+	gate* in1{ nullptr };
+	gate* in2{ nullptr };
 };
 
-class logic_not
+class logic_or : public gate
 {
 public:
 	void solve()
 	{
-		out = !in;
+		out = in1->out || in2->out;
 	}
 
 //private:
-	bool in{ false };
-	bool out{ false };
+	gate* in1{ nullptr };
+	gate* in2{ nullptr };
 };
 
-class logic_xor
+class logic_not : public gate
 {
 public:
 	void solve()
 	{
-		out = in1 ^ in2;
+		out = !in->out;
 	}
 
 //private:
-	bool in1{ false };
-	bool in2{ false };
-	bool out{ false };
+	gate* in{ nullptr };
+};
+
+class logic_xor : public gate
+{
+public:
+	void solve()
+	{
+		out = in1->out ^ in2->out;
+	}
+
+//private:
+	gate* in1{ nullptr };
+	gate* in2{ nullptr };
+};
+
+class user_input : public gate
+{
+};
+
+class user_output : public gate
+{
+public:
+	bool get_rez() const { return terminal->out; }
+
+	gate* terminal{ nullptr };
 };
