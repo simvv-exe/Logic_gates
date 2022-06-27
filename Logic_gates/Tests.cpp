@@ -1,5 +1,6 @@
 #include "Tests.h"
 #include "Gates.h"
+#include "Scheme.h"
 #include <cassert>
 
 #if 0
@@ -92,6 +93,7 @@ void test_xor()
 }
 #endif
 
+#if 0
 void test_simle_scheme()
 {
     //elements
@@ -150,6 +152,46 @@ void test_simle_scheme2()
     logic_not2.solve();
     assert(user_output1.get_rez() == true);
 }
+#endif
+
+void test_scheme()
+{
+    Scheme scheme;
+    //elements
+    user_input user_input1;
+    logic_not logic_not1;
+    user_output user_output1;
+
+    //connections
+    logic_not1.in[0] = &user_input1;
+    user_output1.in[0] = &logic_not1;
+
+    scheme.add(static_cast<gate*>(&user_input1));
+    scheme.add(static_cast<gate*>(&logic_not1));
+    scheme.add(static_cast<gate*>(&user_output1));
+    
+
+    scheme.prepare();
+    scheme.dump();
+
+    // test1
+    user_input1.out = false;
+    logic_not1.solve();
+    user_output1.solve();
+    assert(user_output1.out == true);
+
+    // test2
+    user_input1.out = true;
+    logic_not1.solve();
+    user_output1.solve();
+    assert(user_output1.out == false);
+
+    // test3
+    user_input1.out = true;
+    logic_not1.solve();
+    user_output1.solve();
+    assert(user_output1.out == false);
+}
 
 void test()
 {
@@ -157,6 +199,9 @@ void test()
     //test_or();
     //test_not();
     //test_xor();
-    test_simle_scheme();
-    test_simle_scheme2();
+    
+    //test_simle_scheme();
+    //test_simle_scheme2();
+
+    test_scheme();
 }
