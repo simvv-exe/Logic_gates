@@ -119,6 +119,38 @@ void test_simle_scheme()
     assert(user_output1.get_rez() == false);
 }
 
+void test_simle_scheme2()
+{
+    //elements
+    user_input user_input1;
+    logic_not logic_not1;
+    logic_not logic_not2;
+    user_output user_output1;
+
+    //connections
+    logic_not1.in = &user_input1;
+    logic_not2.in = &logic_not1;
+    user_output1.terminal = &logic_not2;
+
+    // test1
+    user_input1.out = false;
+    logic_not1.solve();
+    logic_not2.solve();
+    assert(user_output1.get_rez() == false);
+
+    // test2
+    user_input1.out = true;
+    logic_not1.solve();
+    logic_not2.solve();
+    assert(user_output1.get_rez() == true);
+
+    // test3
+    user_input1.out = true;
+    logic_not1.solve();
+    logic_not2.solve();
+    assert(user_output1.get_rez() == true);
+}
+
 void test()
 {
     //test_and();
@@ -126,4 +158,5 @@ void test()
     //test_not();
     //test_xor();
     test_simle_scheme();
+    test_simle_scheme2();
 }
