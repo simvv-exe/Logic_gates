@@ -154,7 +154,7 @@ void test_simle_scheme2()
 }
 #endif
 
-void test_scheme()
+void test_simple_ordered_scheme()
 {
     Scheme scheme;
     //elements
@@ -176,20 +176,53 @@ void test_scheme()
 
     // test1
     user_input1.out = false;
-    logic_not1.solve();
-    user_output1.solve();
+    scheme.solve();
     assert(user_output1.out == true);
 
     // test2
     user_input1.out = true;
-    logic_not1.solve();
-    user_output1.solve();
+    scheme.solve();
     assert(user_output1.out == false);
 
     // test3
     user_input1.out = true;
-    logic_not1.solve();
-    user_output1.solve();
+    scheme.solve();
+    assert(user_output1.out == false);
+}
+
+void test_simple_disordered_scheme()
+{
+    Scheme scheme;
+    //elements
+    user_input user_input1;
+    user_output user_output1;
+    logic_not logic_not1;
+
+    //connections
+    logic_not1.in[0] = &user_input1;
+    user_output1.in[0] = &logic_not1;
+
+    scheme.add(static_cast<gate*>(&user_input1));
+    scheme.add(static_cast<gate*>(&user_output1));
+    scheme.add(static_cast<gate*>(&logic_not1));
+
+
+    scheme.prepare();
+    scheme.dump();
+
+    // test1
+    user_input1.out = false;
+    scheme.solve();
+    assert(user_output1.out == true);
+
+    // test2
+    user_input1.out = true;
+    scheme.solve();
+    assert(user_output1.out == false);
+
+    // test3
+    user_input1.out = true;
+    scheme.solve();
     assert(user_output1.out == false);
 }
 
@@ -203,5 +236,6 @@ void test()
     //test_simle_scheme();
     //test_simle_scheme2();
 
-    test_scheme();
+    test_simple_ordered_scheme();
+    test_simple_disordered_scheme();
 }
