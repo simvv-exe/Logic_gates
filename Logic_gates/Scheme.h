@@ -10,9 +10,11 @@ public:
 
 	void add(gate* g);
 	void prepare();
+	void solve();
 	void dump();
 private:
-	void recursively_assign_precedence(gate* current_gate, int precedence);
+	void calc_precedence();
+	void reorder();
 	//std::vector<std::unique_ptr<gate>> elements;
 	std::vector<gate*> elements;
 };
