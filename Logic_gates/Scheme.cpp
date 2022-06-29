@@ -3,11 +3,6 @@
 #include <format>
 #include <algorithm>
 
-void Scheme::add(gate* g)
-{
-	elements.push_back(g);
-}
-
 template<typename T, class Pred>
 std::vector<T> find_all_if(const std::vector<T>& data, const Pred& pred)
 {
@@ -27,11 +22,13 @@ std::vector<T> find_all_if(const std::vector<T>& data, const Pred& pred)
 	return rez;
 }
 
-	
-	recursively_assign_precedence(*first_user_input, 0);
 
+void Scheme::add(gate* g)
+{
+	elements.push_back(g);
+}
 
-void Scheme::prepare()
+void Scheme::compile()
 {
 	calc_precedence();
 	reorder();
@@ -52,20 +49,32 @@ void Scheme::dump()
 	}
 }
 
+
 void Scheme::calc_precedence()
 {
-	auto first_user_input = std::find_if(elements.begin(), elements.end(), [](gate* g) { return g->is_user_input(); });
-
-	auto current_gate = *first_user_input;
+	// solve signal's propagation from use input to last element in chain 
+	auto elements_to_visit = find_all_if(elements, [](gate* g) { return g->is_user_input(); });
+	
+	// FIXME: added protection againts no user input
+	
 	int precedence = 0;
+	decltype(elements_to_visit) nex_step_to_visit;
 
 	while (1)
 	{
-		current_gate->precedence = precedence++;
-		auto next_element = std::find_if(elements.begin(), elements.end(), [current_gate](gate* g) { return g->in[0] == current_gate; });
-		if (next_element == elements.end())
+		nex_step_to_visit.clear();
+
+		for (auto* e : elements_to_visit)
+		{
+			if (e->precedence != -1)
+				continue;
+			e->precedence = precedence++;
+			const auto one_pass_finded = find_all_if(elements, [e](gate* g) { return g->in[0] == e; });
+			nex_step_to_visit.insert(nex_step_to_visit.end(), one_pass_finded.begin(), one_pass_finded.end()); // is there more succinct way of expressing this, like append or +=
+		}
+		if (nex_step_to_visit.empty())
 			break;
-		current_gate = *next_element;
+		elements_to_visit = nex_step_to_visit;
 	}
 }
 
@@ -73,5 +82,3 @@ void Scheme::reorder()
 {
 	std::stable_sort(elements.begin(), elements.end(), [](gate* lhs, gate* rhs) { return lhs->precedence < rhs->precedence; });
 }
-
-
