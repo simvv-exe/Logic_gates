@@ -69,7 +69,19 @@ void Scheme::calc_precedence()
 			if (e->precedence != -1)
 				continue;
 			e->precedence = precedence++;
-			const auto one_pass_finded = find_all_if(elements, [e](gate* g) { return g->in[0] == e; });
+			const auto one_pass_finded = find_all_if(elements, [e](gate* g)
+				{
+					bool rez = false;
+					for (auto b : g->in)
+					{
+						if (b == e)
+						{
+							rez = true;
+							break;
+						}
+					}
+					return rez;
+				});
 			nex_step_to_visit.insert(nex_step_to_visit.end(), one_pass_finded.begin(), one_pass_finded.end()); // is there more succinct way of expressing this, like append or +=
 		}
 		if (nex_step_to_visit.empty())
