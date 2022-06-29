@@ -9,18 +9,20 @@ void Scheme::add(gate* g)
 }
 
 template<typename T, class Pred>
-std::vector<T> find_all_if(const std::vector<T>& data, Pred pred)
+std::vector<T> find_all_if(const std::vector<T>& data, const Pred& pred)
 {
+	// static_assert than pred is callable with T and return value is bool convertable
 	std::vector<T> rez;
+	// is this reserve reasonable
 	rez.reserve(data.size());
-	auto begin_iter = data.begin();
+	auto begin_iter = data.cbegin();
 	while (1)
 	{
-		auto fit = std::find_if(begin_iter, data.end(), pred);
-		if (fit == data.end())
+		const auto fit = std::find_if(begin_iter, data.cend(), pred);
+		if (fit == data.cend())
 			break;
 		rez.push_back(*fit);
-		begin_iter = ++fit;	
+		begin_iter = std::next(fit);	
 	}
 	return rez;
 }
