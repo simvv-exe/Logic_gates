@@ -3,95 +3,166 @@
 #include "Scheme.h"
 #include <cassert>
 
-#if 0
 void test_and()
 {
+    Scheme scheme;
+    //elements
+    user_input user_input1;
+    user_input user_input2;
+    user_output user_output1;
     logic_and land;
 
-    land.in1 = false;
-    land.in2 = false;
-    land.solve();
-    assert(land.out == false);
+    //connections
+    land.in[0] = &user_input1;
+    land.in[1] = &user_input2;
+    user_output1.in[0] = &land;
 
-    land.in1 = false;
-    land.in2 = true;
-    land.solve();
-    assert(land.out == false);
+    scheme.add(static_cast<gate*>(&user_input1));
+    scheme.add(static_cast<gate*>(&user_input2));
+    scheme.add(static_cast<gate*>(&land));
+    scheme.add(static_cast<gate*>(&user_output1));
 
-    land.in1 = true;
-    land.in2 = false;
-    land.solve();
-    assert(land.out == false);
+    scheme.compile();
+    scheme.dump();
 
-    land.in1 = true;
-    land.in2 = true;
-    land.solve();
-    assert(land.out == true);
+
+    user_input1.out = false;
+    user_input2.out = false;
+    scheme.solve();
+    assert(user_output1.out == false);
+
+    user_input1.out = false;
+    user_input2.out = true;
+    scheme.solve();
+    assert(user_output1.out == false);
+
+    user_input1.out = true;
+    user_input2.out = false;
+    scheme.solve();
+    assert(user_output1.out == false);
+
+    user_input1.out = true;
+    user_input2.out = true;
+    scheme.solve();
+    assert(user_output1.out == true);
 }
 
 void test_or()
 {
+    Scheme scheme;
+    //elements
+    user_input user_input1;
+    user_input user_input2;
+    user_output user_output1;
     logic_or lor;
 
-    lor.in1 = false;
-    lor.in2 = false;
-    lor.solve();
-    assert(lor.out == false);
+    //connections
+    lor.in[0] = &user_input1;
+    lor.in[1] = &user_input2;
+    user_output1.in[0] = &lor;
 
-    lor.in1 = false;
-    lor.in2 = true;
-    lor.solve();
-    assert(lor.out == true);
+    scheme.add(static_cast<gate*>(&user_input1));
+    scheme.add(static_cast<gate*>(&user_input2));
+    scheme.add(static_cast<gate*>(&lor));
+    scheme.add(static_cast<gate*>(&user_output1));
 
-    lor.in1 = true;
-    lor.in2 = false;
-    lor.solve();
-    assert(lor.out == true);
+    scheme.compile();
+    scheme.dump();
 
-    lor.in1 = true;
-    lor.in2 = true;
-    lor.solve();
-    assert(lor.out == true);
+
+    user_input1.out = false;
+    user_input2.out = false;
+    scheme.solve();
+    assert(user_output1.out == false);
+
+    user_input1.out = false;
+    user_input2.out = true;
+    scheme.solve();
+    assert(user_output1.out == true);
+
+    user_input1.out = true;
+    user_input2.out = false;
+    scheme.solve();
+    assert(user_output1.out == true);
+
+    user_input1.out = true;
+    user_input2.out = true;
+    scheme.solve();
+    assert(user_output1.out == true);
 }
 
 void test_not()
 {
+    Scheme scheme;
+    //elements
+    user_input user_input1;
+    user_output user_output1;
     logic_not lnot;
 
-    lnot.in = false;
-    lnot.solve();
-    assert(lnot.out == true);
+    //connections
+    lnot.in[0] = &user_input1;
+    user_output1.in[0] = &lnot;
 
-    lnot.in = true;
-    lnot.solve();
-    assert(lnot.out == false);
+    scheme.add(static_cast<gate*>(&user_input1));
+    scheme.add(static_cast<gate*>(&lnot));
+    scheme.add(static_cast<gate*>(&user_output1));
+
+    scheme.compile();
+    scheme.dump();
+
+
+    user_input1.out = false;
+    scheme.solve();
+    assert(user_output1.out == true);
+
+    user_input1.out = true;
+    scheme.solve();
+    assert(user_output1.out == false);
 }
 
 void test_xor()
 {
+    Scheme scheme;
+    //elements
+    user_input user_input1;
+    user_input user_input2;
+    user_output user_output1;
     logic_xor lxor;
 
-    lxor.in1 = false;
-    lxor.in2 = false;
-    lxor.solve();
-    assert(lxor.out == false);
+    //connections
+    lxor.in[0] = &user_input1;
+    lxor.in[1] = &user_input2;
+    user_output1.in[0] = &lxor;
 
-    lxor.in1 = false;
-    lxor.in2 = true;
-    lxor.solve();
-    assert(lxor.out == true);
+    scheme.add(static_cast<gate*>(&user_input1));
+    scheme.add(static_cast<gate*>(&user_input2));
+    scheme.add(static_cast<gate*>(&lxor));
+    scheme.add(static_cast<gate*>(&user_output1));
 
-    lxor.in1 = true;
-    lxor.in2 = false;
-    lxor.solve();
-    assert(lxor.out == true);
+    scheme.compile();
+    scheme.dump();
 
-    lxor.in1 = true;
-    lxor.in2 = true;
-    lxor.solve();
-    assert(lxor.out == false);
+
+    user_input1.out = false;
+    user_input2.out = false;
+    scheme.solve();
+    assert(user_output1.out == false);
+
+    user_input1.out = false;
+    user_input2.out = true;
+    scheme.solve();
+    assert(user_output1.out == true);
+
+    user_input1.out = true;
+    user_input2.out = false;
+    scheme.solve();
+    assert(user_output1.out == true);
+
+    user_input1.out = true;
+    user_input2.out = true;
+    scheme.solve();
+    assert(user_output1.out == false);
 }
-#endif
 
 #if 0
 void test_simle_scheme()
@@ -171,7 +242,7 @@ void test_simple_ordered_scheme()
     scheme.add(static_cast<gate*>(&user_output1));
     
 
-    scheme.prepare();
+    scheme.compile();
     scheme.dump();
 
     // test1
@@ -207,7 +278,43 @@ void test_simple_disordered_scheme()
     scheme.add(static_cast<gate*>(&logic_not1));
 
 
-    scheme.prepare();
+    scheme.compile();
+    scheme.dump();
+
+    // test1
+    user_input1.out = false;
+    scheme.solve();
+    assert(user_output1.out == true);
+
+    // test2
+    user_input1.out = true;
+    scheme.solve();
+    assert(user_output1.out == false);
+
+    // test3
+    user_input1.out = true;
+    scheme.solve();
+    assert(user_output1.out == false);
+}
+
+void test_disordered_scheme_2input()
+{
+    Scheme scheme;
+    //elements
+    user_input user_input1;
+    user_output user_output1;
+    logic_not logic_not1;
+
+    //connections
+    logic_not1.in[0] = &user_input1;
+    user_output1.in[0] = &logic_not1;
+
+    scheme.add(static_cast<gate*>(&user_input1));
+    scheme.add(static_cast<gate*>(&user_output1));
+    scheme.add(static_cast<gate*>(&logic_not1));
+
+
+    scheme.compile();
     scheme.dump();
 
     // test1
@@ -228,14 +335,16 @@ void test_simple_disordered_scheme()
 
 void test()
 {
-    //test_and();
-    //test_or();
-    //test_not();
-    //test_xor();
+    test_and();
+    test_or();
+    test_not();
+    test_xor();
     
     //test_simle_scheme();
     //test_simle_scheme2();
 
     test_simple_ordered_scheme();
     test_simple_disordered_scheme();
+
+    test_disordered_scheme_2input();
 }
