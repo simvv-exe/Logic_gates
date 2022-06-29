@@ -297,44 +297,103 @@ void test_simple_disordered_scheme()
     assert(user_output1.out == false);
 }
 
-void test_disordered_scheme_2input()
+void test_rs_trigger()
 {
     Scheme scheme;
     //elements
-    user_input user_input1;
-    user_output user_output1;
+    user_input user_input_r;
+    user_input user_input_s;
+    user_output user_output_q;
+    user_output user_output_nq;
+    logic_and logic_and1;
+    logic_and logic_and2;
     logic_not logic_not1;
+    logic_not logic_not2;
 
     //connections
-    logic_not1.in[0] = &user_input1;
-    user_output1.in[0] = &logic_not1;
+    logic_and1.in[0] = &user_input_r;
+    logic_and1.in[1] = &logic_not2;
+    logic_and2.in[0] = &logic_not1;
+    logic_and2.in[1] = &user_input_s;
+    logic_not1.in[0] = &logic_and1;
+    logic_not2.in[0] = &logic_and2;
+    user_output_q.in[0]  = &logic_not1;
+    user_output_nq.in[0] = &logic_not2;
 
-    scheme.add(static_cast<gate*>(&user_input1));
-    scheme.add(static_cast<gate*>(&user_output1));
+    scheme.add(static_cast<gate*>(&user_input_r));
+    scheme.add(static_cast<gate*>(&user_input_s));
+    scheme.add(static_cast<gate*>(&user_output_q));
+    scheme.add(static_cast<gate*>(&user_output_nq));
+    scheme.add(static_cast<gate*>(&logic_and1));
+    scheme.add(static_cast<gate*>(&logic_and2));
     scheme.add(static_cast<gate*>(&logic_not1));
+    scheme.add(static_cast<gate*>(&logic_not2));
 
 
     scheme.compile();
     scheme.dump();
 
-    // test1
-    user_input1.out = false;
+    // test1 initial condition
+    user_input_r.out = false;
+    user_input_s.out = false;
     scheme.solve();
-    assert(user_output1.out == true);
+    assert(user_output_q.out  == true);
+    assert(user_output_nq.out == true);
 
-    // test2
-    user_input1.out = true;
+    // test2 nothing change (step from initial condition)
+    user_input_r.out = false;
+    user_input_s.out = false;
     scheme.solve();
-    assert(user_output1.out == false);
+    assert(user_output_q.out == true);
+    assert(user_output_nq.out == true);
 
-    // test3
-    user_input1.out = true;
+    // test3 set
+    user_input_r.out = false;
+    user_input_s.out = true;
     scheme.solve();
-    assert(user_output1.out == false);
+    assert(user_output_q.out == true);
+    assert(user_output_nq.out == false);
+
+    // test4 set hold
+    user_input_r.out = false;
+    user_input_s.out = true;
+    scheme.solve();
+    assert(user_output_q.out == true);
+    assert(user_output_nq.out == false);
+
+    // test5 set memory
+    user_input_r.out = false;
+    user_input_s.out = false;
+    scheme.solve();
+    assert(user_output_q.out == true);
+    assert(user_output_nq.out == false);
+
+    // test6 reset hold 
+    user_input_r.out = true;
+    user_input_s.out = false;
+    scheme.solve();
+    assert(user_output_q.out == false);
+    assert(user_output_nq.out == true);
+
+    // test7 reset memory 
+    user_input_r.out = false;
+    user_input_s.out = false;
+    scheme.solve();
+    assert(user_output_q.out == false);
+    assert(user_output_nq.out == true);
+
+    // test8 last nothing change
+    user_input_r.out = false;
+    user_input_s.out = false;
+    scheme.solve();
+    assert(user_output_q.out == false);
+    assert(user_output_nq.out == true);
 }
+
 
 void test()
 {
+#if 0
     test_and();
     test_or();
     test_not();
@@ -346,5 +405,6 @@ void test()
     test_simple_ordered_scheme();
     test_simple_disordered_scheme();
 
-    test_disordered_scheme_2input();
+#endif
+    test_rs_trigger();
 }
