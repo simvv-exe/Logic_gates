@@ -19,29 +19,12 @@ public:
 	//	, name(std::move(name_p))
 	//{}
 	virtual void solve() = 0;
-	std::string dump() const
-	{
-		std::string temp;
-		temp += std::format("\"{}\" {} @{}\n", name, type, static_cast<const void*>(this));
-		temp += std::format("\tprecedence = {}\n", precedence);
-		for (int i = 0; i < in_size; ++i)
-		{
-			
-			if (in[i])
-				temp += std::format("\tin[{}] = \"{}\" {} @{}\n", i, in[i]->name, in[i]->type, static_cast<void*>(in[i]));
-			else
-				temp += std::format("\tin[{}] = N/C\n", i);
-		}
-		temp += std::format("\tout = {}\n", out);
-		return temp;
-	}
-	virtual bool is_user_input() const
-	{
-		return false;
-	}
+	std::string dump() const;
+	virtual bool is_user_input() const { return false; }
+	//void set_precedence(const int precedence_p) { precedence = precedence_p; }
 
-	std::string name;
-	std::string type;
+	const std::string name;
+	const std::string type;
 	int precedence{ -1 };
 	gate* in[in_size]{};
 	bool out{ false };
@@ -54,10 +37,7 @@ public:
 		: gate("and", name_p)
 	{}
 
-	void solve() override
-	{
-		out = in[0]->out && in[1]->out;
-	}
+	void solve() override;
 };
 
 class logic_or : public gate
@@ -67,11 +47,7 @@ public:
 		: gate("or", name_p)
 	{}
 
-	void solve() override
-	{
-		out = in[0]->out || in[1]->out;
-	}
-
+	void solve() override;
 };
 
 class logic_not : public gate
@@ -81,10 +57,7 @@ public:
 		: gate("not", name_p)
 	{}
 
-	void solve() override
-	{
-		out = !in[0]->out;
-	}
+	void solve() override;
 };
 
 class logic_xor : public gate
@@ -93,23 +66,18 @@ public:
 	logic_xor(const std::string& name_p = ""s)
 		: gate("xor", name_p)
 	{}
-	void solve() override
-	{
-		out = in[0]->out ^ in[1]->out;
-	}
+
+	void solve() override;
 };
 
-class user_input : public gate
+class user_input : public  gate
 {
 public:
 	user_input(const std::string& name_p = ""s)
 		: gate("input", name_p)
 	{}
 
-	bool is_user_input() const override
-	{
-		return true;
-	}
+	bool is_user_input() const override { return true; }
 
 	void solve() override {}
 };
