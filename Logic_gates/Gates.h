@@ -3,151 +3,122 @@
 #include <string>
 #include <format>
 
+using namespace std::string_literals;
+
+constexpr int in_size = 2;
+
 class gate
 {
 public:
+	gate(const std::string& type_p, const std::string& name_p)
+		: type(type_p)
+		, name(name_p)
+	{}
+	//gate(std::string&& type_p, std::string&& name_p)
+	//	: type(std::move(type_p))
+	//	, name(std::move(name_p))
+	//{}
 	virtual void solve() = 0;
-	virtual std::string dump() const = 0;
+	std::string dump() const
+	{
+		std::string temp;
+		temp += std::format("\"{}\" {} @{}\n", name, type, static_cast<const void*>(this));
+		temp += std::format("\tprecedence = {}\n", precedence);
+		for (int i = 0; i < in_size; ++i)
+		{
+			temp += std::format("\tin[{}] = {}\n", i, static_cast<void*>(in[i]));
+		}
+		temp += std::format("\tout = {}\n", out);
+		return temp;
+	}
 	virtual bool is_user_input() const
 	{
 		return false;
 	}
 
+	std::string name;
+	std::string type;
 	int precedence{ -1 };
-	gate* in[8]{};
+	gate* in[in_size]{};
 	bool out{ false };
 };
 
 class logic_and : public gate
 {
 public:
+	logic_and(const std::string& name_p = ""s)
+		: gate("and", name_p)
+	{}
+
 	void solve() override
 	{
 		out = in[0]->out && in[1]->out;
-	}
-
-	std::string dump() const override
-	{
-		std::string temp;
-		temp += std::format("And @ {}\n", static_cast<const void*>(this));
-		temp += std::format("\tprecedence = {}\n", precedence);
-		for (int i = 0; i < 8; ++i)
-		{
-			temp += std::format("\tin[{}] = {}\n", i, static_cast<void*>(in[i]));
-		}
-		temp += std::format("\tout = {}\n", out);
-		return temp;
 	}
 };
 
 class logic_or : public gate
 {
 public:
+	logic_or(const std::string& name_p = ""s)
+		: gate("or", name_p)
+	{}
+
 	void solve() override
 	{
 		out = in[0]->out || in[1]->out;
 	}
 
-	std::string dump() const override
-	{
-		std::string temp;
-		temp += std::format("Or @ {}\n", static_cast<const void*>(this));
-		temp += std::format("\tprecedence = {}\n", precedence);
-		for (int i = 0; i < 8; ++i)
-		{
-			temp += std::format("\tin[{}] = {}\n", i, static_cast<void*>(in[i]));
-		}
-		temp += std::format("\tout = {}\n", out);
-		return temp;
-	}
 };
 
 class logic_not : public gate
 {
 public:
+	logic_not(const std::string& name_p = ""s)
+		: gate("not", name_p)
+	{}
+
 	void solve() override
 	{
 		out = !in[0]->out;
-	}
-
-	std::string dump() const override
-	{
-		std::string temp;
-		temp += std::format("Not @ {}\n", static_cast<const void*>(this));
-		temp += std::format("\tprecedence = {}\n", precedence);
-		for (int i = 0; i < 8; ++i)
-		{
-			temp += std::format("\tin[{}] = {}\n", i, static_cast<void*>(in[i]));
-		}
-		temp += std::format("\tout = {}\n", out);
-		return temp;
 	}
 };
 
 class logic_xor : public gate
 {
 public:
+	logic_xor(const std::string& name_p = ""s)
+		: gate("xor", name_p)
+	{}
 	void solve() override
 	{
 		out = in[0]->out ^ in[1]->out;
-	}
-
-	std::string dump() const override
-	{
-		std::string temp;
-		temp += std::format("Xor @ {}\n", static_cast<const void*>(this));
-		temp += std::format("\tprecedence = {}\n", precedence);
-		for (int i = 0; i < 8; ++i)
-		{
-			temp += std::format("\tin[{}] = {}\n", i, static_cast<void*>(in[i]));
-		}
-		temp += std::format("\tout = {}\n", out);
-		return temp;
 	}
 };
 
 class user_input : public gate
 {
 public:
+	user_input(const std::string& name_p = ""s)
+		: gate("input", name_p)
+	{}
+
 	bool is_user_input() const override
 	{
 		return true;
 	}
 
 	void solve() override {}
-
-	std::string dump() const override
-	{
-		std::string temp;
-		temp += std::format("Input @ {}\n", static_cast<const void*>(this));
-		temp += std::format("\tprecedence = {}\n", precedence);
-		for (int i = 0; i < 8; ++i)
-		{
-			temp += std::format("\tin[{}] = {}\n", i, static_cast<void*>(in[i]));
-		}
-		temp += std::format("\tout = {}\n", out);
-		return temp;
-	}
 };
 
 class user_output : public gate
 {
 public:
+	user_output(const std::string& name_p = ""s)
+		: gate("output", name_p)
+	{}
+
 	void solve() override 
 	{
 		out = in[0]->out;
-	}
-
-	std::string dump() const override
-	{
-		std::string temp;
-		temp += std::format("Output @ {}\n", static_cast<const void*>(this));
-		temp += std::format("\tprecedence = {}\n", precedence);
-		for (int i = 0; i < 8; ++i)
-		{
-			temp += std::format("\tin[{}] = {}\n", i, static_cast<void*>(in[i]));
-		}
-		temp += std::format("\tout = {}\n", out);
-		return temp;
 	}
 };
