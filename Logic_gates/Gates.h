@@ -26,7 +26,11 @@ public:
 		temp += std::format("\tprecedence = {}\n", precedence);
 		for (int i = 0; i < in_size; ++i)
 		{
-			temp += std::format("\tin[{}] = {}\n", i, static_cast<void*>(in[i]));
+			
+			if (in[i])
+				temp += std::format("\tin[{}] = \"{}\" {} @{}\n", i, in[i]->name, in[i]->type, static_cast<void*>(in[i]));
+			else
+				temp += std::format("\tin[{}] = N/C\n", i);
 		}
 		temp += std::format("\tout = {}\n", out);
 		return temp;
