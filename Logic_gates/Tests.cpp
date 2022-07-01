@@ -329,6 +329,80 @@ void test_rs_trigger()
     assert(out_nq.out == true);
 }
 
+void test_bliker()
+{
+    #pragma message ("For old precedence");
+
+    Scheme scheme;
+    //elements
+    user_input in("in");
+    user_output out("out");
+    logic_or or1("or1");
+    logic_not not1("not1");
+
+    //connections
+    or1.in[0] = &in;
+    not1.in[0] = &or1;
+    or1.in[1] = &not1;
+    out.in[0] = &or1;
+
+    scheme.add(static_cast<gate*>(&in));
+    scheme.add(static_cast<gate*>(&out));
+    scheme.add(static_cast<gate*>(&or1));
+    scheme.add(static_cast<gate*>(&not1));
+
+
+    scheme.compile();
+    scheme.dump();
+
+    // test1 initial condition
+    in.out = false;
+    scheme.solve();
+    assert(out.out == false);
+
+    // test2 blink 1
+    scheme.solve();
+    assert(out.out == true);
+
+    // test3 blink 2
+    scheme.solve();
+    assert(out.out == false);
+
+    // test4 blink 3
+    scheme.solve();
+    assert(out.out == true);
+
+    // test5 blink 4
+    scheme.solve();
+    assert(out.out == false);
+
+    // test6 blink 5
+    scheme.solve();
+    assert(out.out == true);
+
+    // test7 blink stopped
+    in.out = true;
+    scheme.solve();
+    assert(out.out == true);
+
+    // test8 nothing happens
+    scheme.solve();
+    assert(out.out == true);
+
+    // test9 blink restart
+    in.out = false;
+    scheme.solve();
+    assert(out.out == false);
+
+    // test10 blink 1 after restart
+    scheme.solve();
+    assert(out.out == true);
+
+    // test11 blink 2 after restart
+    scheme.solve();
+    assert(out.out == false);
+}
+
 
 void test()
 {
