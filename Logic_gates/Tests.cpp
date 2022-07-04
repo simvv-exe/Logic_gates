@@ -236,7 +236,7 @@ void test_simple_disordered_scheme()
     assert(out1.out == false);
 }
 
-void test_rs_trigger()
+void test_rs_trigger_on_or()
 {
     Scheme scheme;
     //elements
@@ -244,18 +244,18 @@ void test_rs_trigger()
     user_input in_s("in_s");
     user_output out_q("out_q");
     user_output out_nq("out_nq");
-    logic_and and1("and1");
-    logic_and and2("and2");
+    logic_or or1("or1");
+    logic_or or2("or2");
     logic_not not1("not1");
     logic_not not2("not2");
 
     //connections
-    and1.in[0] = &in_r;
-    and1.in[1] = &not2;
-    and2.in[0] = &not1;
-    and2.in[1] = &in_s;
-    not1.in[0] = &and1;
-    not2.in[0] = &and2;
+    or1.in[0] = &in_r;
+    or1.in[1] = &not2;
+    or2.in[0] = &not1;
+    or2.in[1] = &in_s;
+    not1.in[0] = &or1;
+    not2.in[0] = &or2;
     out_q.in[0]  = &not1;
     out_nq.in[0] = &not2;
 
@@ -263,8 +263,8 @@ void test_rs_trigger()
     scheme.add(static_cast<gate*>(&in_s));
     scheme.add(static_cast<gate*>(&out_q));
     scheme.add(static_cast<gate*>(&out_nq));
-    scheme.add(static_cast<gate*>(&and1));
-    scheme.add(static_cast<gate*>(&and2));
+    scheme.add(static_cast<gate*>(&or1));
+    scheme.add(static_cast<gate*>(&or2));
     scheme.add(static_cast<gate*>(&not1));
     scheme.add(static_cast<gate*>(&not2));
 
@@ -273,17 +273,15 @@ void test_rs_trigger()
     scheme.dump();
 
     // test1 initial condition
-    in_r.out = false;
+    in_r.out = true;
     in_s.out = false;
     scheme.solve();
-    assert(out_q.out  == true);
+    assert(out_q.out  == false);
     assert(out_nq.out == true);
 
     // test2 nothing change (step from initial condition)
-    in_r.out = false;
-    in_s.out = false;
     scheme.solve();
-    assert(out_q.out == true);
+    assert(out_q.out == false);
     assert(out_nq.out == true);
 
     // test3 set
@@ -294,8 +292,6 @@ void test_rs_trigger()
     assert(out_nq.out == false);
 
     // test4 set hold
-    in_r.out = false;
-    in_s.out = true;
     scheme.solve();
     assert(out_q.out == true);
     assert(out_nq.out == false);
@@ -307,32 +303,60 @@ void test_rs_trigger()
     assert(out_q.out == true);
     assert(out_nq.out == false);
 
-    // test6 reset hold 
+    // test6 reset 
     in_r.out = true;
     in_s.out = false;
     scheme.solve();
     assert(out_q.out == false);
     assert(out_nq.out == true);
 
-    // test7 reset memory 
+    // test7 reset hold 
+    in_r.out = true;
+    in_s.out = false;
+    scheme.solve();
+    assert(out_q.out == false);
+    assert(out_nq.out == true);
+
+    // test8 reset memory 
     in_r.out = false;
     in_s.out = false;
     scheme.solve();
     assert(out_q.out == false);
     assert(out_nq.out == true);
 
-    // test8 last nothing change
+    // test9 one tick set
+    in_r.out = false;
+    in_s.out = true;
+    scheme.solve();
+    assert(out_q.out == true);
+    assert(out_nq.out == false);
+
+    // test10 set memory
+    in_r.out = false;
+    in_s.out = false;
+    scheme.solve();
+    assert(out_q.out == true);
+    assert(out_nq.out == false);
+
+    // test11 one tick reset
+    in_r.out = true;
+    in_s.out = false;
+    scheme.solve();
+    assert(out_q.out == false);
+    assert(out_nq.out == true);
+
+    // test12 reset memory
     in_r.out = false;
     in_s.out = false;
     scheme.solve();
     assert(out_q.out == false);
     assert(out_nq.out == true);
+
+    //consecutive
 }
 
 void test_bliker()
 {
-    #pragma message ("For old precedence");
-
     Scheme scheme;
     //elements
     user_input in("in");
@@ -358,51 +382,49 @@ void test_bliker()
     // test1 initial condition
     in.out = false;
     scheme.solve();
-    assert(out.out == false);
+    assert(out.out == true);
 
     // test2 blink 1
     scheme.solve();
-    assert(out.out == true);
+    assert(out.out == false);
 
     // test3 blink 2
     scheme.solve();
-    assert(out.out == false);
+    assert(out.out == true);
 
     // test4 blink 3
     scheme.solve();
-    assert(out.out == true);
+    assert(out.out == false);
 
     // test5 blink 4
     scheme.solve();
-    assert(out.out == false);
-
-    // test6 blink 5
-    scheme.solve();
     assert(out.out == true);
 
-    // test7 blink stopped
+    // test6 blink stopped
     in.out = true;
     scheme.solve();
     assert(out.out == true);
 
-    // test8 nothing happens
+    // test7 nothing happens
     scheme.solve();
     assert(out.out == true);
 
-    // test9 blink restart
+    // test8 blink restart
     in.out = false;
     scheme.solve();
     assert(out.out == false);
 
-    // test10 blink 1 after restart
+    // test9 blink 1 after restart
     scheme.solve();
     assert(out.out == true);
 
-    // test11 blink 2 after restart
+    // test10 blink 2 after restart
     scheme.solve();
     assert(out.out == false);
 }
 
+
+//test_always_true
 
 void test()
 {
@@ -414,5 +436,7 @@ void test()
     test_simple_ordered_scheme();
     test_simple_disordered_scheme();
 
-    //test_rs_trigger();
+    //test_rs_trigger_on_or();
+
+    test_bliker();
 }
