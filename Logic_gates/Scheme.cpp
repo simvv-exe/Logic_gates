@@ -28,10 +28,41 @@ void Scheme::add(gate* g)
 	elements.push_back(g);
 }
 
+validation_result Scheme::validate()
+{
+	bool has_input = false;
+	for (auto* e : elements)
+	{
+		if (e->is_user_input())
+		{
+			has_input = true;
+			break;
+		}
+	}
+	if (!has_input)
+		return validation_result::no_input;
+	
+	bool has_output = false;
+	for (auto* e : elements)
+	{
+		if (e->is_user_output())
+		{
+			has_output = true;
+			break;
+		}
+	}
+	if (!has_output)
+		return validation_result::no_output;
+
+	return validation_result::ok;
+}
+
 void Scheme::compile()
 {
 	calc_precedence();
 	reorder();
+	if (validate() != validation_result::ok)
+		throw std::runtime_error("lavidation error");
 }
 
 void Scheme::solve()
