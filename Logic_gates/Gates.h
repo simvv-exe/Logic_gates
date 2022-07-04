@@ -21,6 +21,7 @@ public:
 	virtual void solve() = 0;
 	std::string dump() const;
 	virtual bool is_user_input() const { return false; }
+	virtual bool is_user_output() const { return false; }
 	//void set_precedence(const int precedence_p) { precedence = precedence_p; }
 
 	const std::string name;
@@ -88,6 +89,8 @@ public:
 	user_output(const std::string& name_p = ""s)
 		: gate("output", name_p)
 	{}
+
+	bool is_user_output() const { return true; }
 
 	void solve() override 
 	{
