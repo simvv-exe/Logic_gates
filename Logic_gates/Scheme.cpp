@@ -59,10 +59,11 @@ validation_result Scheme::validate()
 
 void Scheme::compile()
 {
-	calc_precedence();
-	reorder();
 	if (validate() != validation_result::ok)
 		throw std::runtime_error("lavidation error");
+	
+	//calc_precedence_as_signal_propagation();
+	calc_precedence_as_best_backtrace_fit();
 }
 
 void Scheme::solve()
@@ -81,7 +82,7 @@ void Scheme::dump()
 }
 
 
-void Scheme::calc_precedence()
+void Scheme::calc_precedence_as_signal_propagation()
 {
 	// solve signal's propagation from use input to last element in chain 
 	auto elements_to_visit = find_all_if(elements, [](gate* g) { return g->is_user_input(); });
@@ -119,9 +120,41 @@ void Scheme::calc_precedence()
 			break;
 		elements_to_visit = nex_step_to_visit;
 	}
-}
 
-void Scheme::reorder()
-{
+	// reorder
 	std::stable_sort(elements.begin(), elements.end(), [](gate* lhs, gate* rhs) { return lhs->precedence < rhs->precedence; });
 }
+
+void Scheme::calc_precedence_as_best_backtrace_fit()
+{
+	auto elements_to_visit = find_all_if(elements, [](gate* g) { return g->is_user_output(); });
+
+
+	int precedence = 0;
+	decltype(elements_to_visit) nex_step_to_visit;
+
+	while (1)
+	{
+		nex_step_to_visit.clear();
+
+		for (auto* e : elements_to_visit)
+		{
+			if (e->precedence != -1)
+				continue;
+			e->precedence = precedence++;
+			if (auto element = e->in[0]; element)
+				nex_step_to_visit.push_back(element);
+			if (auto element = e->in[1]; element)
+				nex_step_to_visit.push_back(element);
+
+		}
+		if (nex_step_to_visit.empty())
+			break;
+		elements_to_visit = nex_step_to_visit;
+	}
+
+	// reorder
+	std::stable_sort(elements.begin(), elements.end(), [](gate* lhs, gate* rhs) { return lhs->precedence > rhs->precedence; });
+}
+
+

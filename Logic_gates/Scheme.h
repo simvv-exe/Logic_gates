@@ -21,8 +21,8 @@ public:
 	void dump();
 
 private:
-	void calc_precedence();
-	void reorder();
+	void calc_precedence_as_signal_propagation();
+	void calc_precedence_as_best_backtrace_fit();
 	
 	//std::vector<std::unique_ptr<gate>> elements;
 	std::vector<gate*> elements;
