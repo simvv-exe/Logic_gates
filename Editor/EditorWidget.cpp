@@ -24,7 +24,7 @@ EditorWidget::EditorWidget()
     wxMenu* menu_edit = new wxMenu;
     menu_edit->Append(wxID_UNDO);
     //menu_edit->Enable(wxID_UNDO, false);
-    menu_edit->Append(wxID_REDO);
+    menu_edit->Append(wxID_REDO); // Ctrl + Y
     menu_edit->AppendSeparator();
     menu_edit->Append(wxID_CUT);
     menu_edit->Append(wxID_COPY);
@@ -37,7 +37,7 @@ EditorWidget::EditorWidget()
     wxMenu* menu_settings = new wxMenu;
 
     wxMenu* menuHelp = new wxMenu;
-    menuHelp->Append(wxID_HELP);
+    menuHelp->Append(wxID_HELP); // display help
     menuHelp->AppendSeparator();
     menuHelp->Append(wxID_ABOUT);
 
@@ -53,7 +53,6 @@ EditorWidget::EditorWidget()
     CreateStatusBar();
     SetStatusText("Welcome to wxWidgets!");
 
-    Bind(wxEVT_MENU, &EditorWidget::OnHello, this, ID_Hello);
     Bind(wxEVT_MENU, &EditorWidget::OnAbout, this, wxID_ABOUT);
     Bind(wxEVT_MENU, &EditorWidget::OnExit, this, wxID_EXIT);
 }
@@ -65,11 +64,6 @@ void EditorWidget::OnExit(wxCommandEvent& event)
 
 void EditorWidget::OnAbout(wxCommandEvent& event)
 {
-    wxMessageBox("This is a wxWidgets Hello World example",
+    wxMessageBox(L"Unicode test\nLorem ipsum dolor sit amet\n漢語",
         "About Hello World", wxOK | wxICON_INFORMATION);
-}
-
-void EditorWidget::OnHello(wxCommandEvent& event)
-{
-    wxLogMessage("Hello world from wxWidgets!");
 }
