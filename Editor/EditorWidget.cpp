@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <wx/wx.h>
 #include "MainApp.h"
@@ -12,57 +12,59 @@ enum
 EditorWidget::EditorWidget()
     : wxFrame(NULL, wxID_ANY, "Editor")
 {
-    wxMenu* menu_file = new wxMenu;
-    menu_file->Append(wxID_NEW);
-    menu_file->Append(wxID_OPEN);
-    menu_file->Append(wxID_CLOSE); //Ctrl + W
-    menu_file->Append(wxID_SAVE);
-    menu_file->Append(wxID_SAVEAS);
-    menu_file->AppendSeparator();
-    menu_file->Append(wxID_EXIT);  //Alt + F4
+    m_menu_file = new wxMenu;
+    m_menu_file->Append(wxID_NEW);
+    m_menu_file->Append(wxID_OPEN);
+    m_menu_file->Append(wxID_CLOSE); //Ctrl + W
+    m_menu_file->Append(wxID_SAVE);
+    m_menu_file->Append(wxID_SAVEAS);
+    m_menu_file->AppendSeparator();
+    m_menu_file->Append(wxID_EXIT);  //Alt + F4
 
-    wxMenu* menu_edit = new wxMenu;
-    menu_edit->Append(wxID_UNDO);
-    //menu_edit->Enable(wxID_UNDO, false);
-    menu_edit->Append(wxID_REDO); // Ctrl + Y
-    menu_edit->AppendSeparator();
-    menu_edit->Append(wxID_CUT);
-    menu_edit->Append(wxID_COPY);
-    menu_edit->Append(wxID_PASTE);
-    menu_edit->AppendSeparator();
-    menu_edit->Append(wxID_FIND);
+    m_menu_edit = new wxMenu;
+    m_menu_edit->Append(wxID_UNDO);
+    //m_menu_edit->Enable(wxID_UNDO, false);
+    m_menu_edit->Append(wxID_REDO); // Ctrl + Y
+    m_menu_edit->AppendSeparator();
+    m_menu_edit->Append(wxID_CUT);
+    m_menu_edit->Append(wxID_COPY);
+    m_menu_edit->Append(wxID_PASTE);
+    m_menu_edit->AppendSeparator();
+    m_menu_edit->Append(wxID_FIND);
 
-    wxMenu* menu_view = new wxMenu;
+    m_menu_view = new wxMenu;
 
-    wxMenu* menu_settings = new wxMenu;
+    m_menu_settings = new wxMenu;
 
-    wxMenu* menuHelp = new wxMenu;
-    menuHelp->Append(wxID_HELP); // display help
-    menuHelp->AppendSeparator();
-    menuHelp->Append(wxID_ABOUT);
+    m_menu_help = new wxMenu;
+    m_menu_help->Append(wxID_HELP); // display help
+    m_menu_help->AppendSeparator();
+    m_menu_help->Append(wxID_ABOUT);
 
-    wxMenuBar* menuBar = new wxMenuBar;
-    menuBar->Append(menu_file, "&File");
-    menuBar->Append(menu_edit, "&Edit");
-    menuBar->Append(menu_view, "&View");
-    menuBar->Append(menu_settings, "&Settings");
-    menuBar->Append(menuHelp, "&Help");
+    m_menu_bar = new wxMenuBar;
+    m_menu_bar->Append(m_menu_file, "&File");
+    m_menu_bar->Append(m_menu_edit, "&Edit");
+    m_menu_bar->Append(m_menu_view, "&View");
+    m_menu_bar->Append(m_menu_settings, "&Settings");
+    m_menu_bar->Append(m_menu_help, "&Help");
     
-    SetMenuBar(menuBar);
+    SetMenuBar(m_menu_bar);
 
     CreateStatusBar();
     SetStatusText("Welcome to wxWidgets!");
 
-    Bind(wxEVT_MENU, &EditorWidget::OnAbout, this, wxID_ABOUT);
-    Bind(wxEVT_MENU, &EditorWidget::OnExit, this, wxID_EXIT);
+    m_tool_bar = CreateToolBar(wxTB_VERTICAL, wxID_ANY);
+
+    Bind(wxEVT_MENU, &EditorWidget::on_about, this, wxID_ABOUT);
+    Bind(wxEVT_MENU, &EditorWidget::on_exit, this, wxID_EXIT);
 }
 
-void EditorWidget::OnExit(wxCommandEvent& event)
+void EditorWidget::on_exit(wxCommandEvent& event)
 {
     Close(true);
 }
 
-void EditorWidget::OnAbout(wxCommandEvent& event)
+void EditorWidget::on_about(wxCommandEvent& event)
 {
     wxMessageBox(L"Unicode test\nLorem ipsum dolor sit amet\n漢語",
         "About Hello World", wxOK | wxICON_INFORMATION);
