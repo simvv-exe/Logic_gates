@@ -4,13 +4,8 @@
 #include "MainApp.h"
 #include "EditorWidget.h"
 
-enum
-{
-    ID_Hello = 1
-};
-
 EditorWidget::EditorWidget()
-    : wxFrame(NULL, wxID_ANY, "Editor")
+    : wxFrame(nullptr, wxID_ANY, "Editor")
 {
     m_menu_file = new wxMenu;
     m_menu_file->Append(wxID_NEW);
@@ -53,7 +48,12 @@ EditorWidget::EditorWidget()
     CreateStatusBar();
     SetStatusText("Welcome to wxWidgets!");
 
-    m_tool_bar = CreateToolBar(wxTB_VERTICAL, wxID_ANY);
+    //m_tool_bar = CreateToolBar(wxTB_VERTICAL, wxID_ANY);
+    m_tool_bar = CreateToolBar(wxTB_HORIZONTAL, wxID_ANY);
+    auto* b = new wxButton(m_tool_bar, ID::toolbar_1, "test", {0, 0}, { 16, 16 }, 0);
+    m_tool_bar->AddControl(b);
+    m_tool_bar->Realize();
+
 
     Bind(wxEVT_MENU, &EditorWidget::on_about, this, wxID_ABOUT);
     Bind(wxEVT_MENU, &EditorWidget::on_exit, this, wxID_EXIT);
