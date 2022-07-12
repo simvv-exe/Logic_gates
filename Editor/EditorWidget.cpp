@@ -1,6 +1,9 @@
 ﻿#pragma once
 
-#include <wx/wx.h>
+#include <wx/wxprec.h>
+#include <wx/artprov.h>
+
+
 #include "MainApp.h"
 #include "EditorWidget.h"
 
@@ -48,13 +51,17 @@ EditorWidget::EditorWidget()
     CreateStatusBar();
     SetStatusText("Welcome to wxWidgets!");
 
-    //m_tool_bar = CreateToolBar(wxTB_VERTICAL, wxID_ANY);
-    m_tool_bar = CreateToolBar(wxTB_HORIZONTAL, wxID_ANY);
-    auto* b = new wxButton(m_tool_bar, ID::toolbar_1, "test", {0, 0}, { 16, 16 }, 0);
-    m_tool_bar->AddControl(b);
-    m_tool_bar->Realize();
+    m_top_tool_bar = CreateToolBar(wxTB_HORIZONTAL , wxID_ANY);
+    m_top_tool_bar->AddTool(wxID_NEW, "New", wxArtProvider::GetBitmap("wxART_NEW")); 
+    m_top_tool_bar->Realize();
 
 
+    m_left_tool_bar = new wxToolBar(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTB_VERTICAL);
+    m_left_tool_bar->AddTool(wxID_ABOUT, "About", wxArtProvider::GetBitmap("wxART_HELP_SIDE_PANEL"));
+    m_left_tool_bar->Realize();
+
+
+    Bind(wxEVT_MENU, &EditorWidget::on_new, this, wxID_NEW);
     Bind(wxEVT_MENU, &EditorWidget::on_about, this, wxID_ABOUT);
     Bind(wxEVT_MENU, &EditorWidget::on_exit, this, wxID_EXIT);
 }
@@ -68,4 +75,9 @@ void EditorWidget::on_about(wxCommandEvent& event)
 {
     wxMessageBox(L"Unicode test\nLorem ipsum dolor sit amet\n漢語",
         "About Hello World", wxOK | wxICON_INFORMATION);
+}
+
+void EditorWidget::on_new(wxCommandEvent& event)
+{
+    wxMessageBox("New");
 }
