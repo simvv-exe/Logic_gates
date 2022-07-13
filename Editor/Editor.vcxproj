@@ -147,10 +147,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Canvas.h" />
     <ClInclude Include="MainApp.h" />
     <ClInclude Include="EditorWidget.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Canvas.cpp" />
     <ClCompile Include="MainApp.cpp" />
     <ClCompile Include="EditorWidget.cpp" />
   </ItemGroup>
